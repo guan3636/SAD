@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍵 好食光 — 美食分享交流平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --matcha:       #6B8F5E;
+    --matcha-mid:   #87A878;
+    --matcha-light: #B5CCB0;
+    --matcha-pale:  #E8F0E5;
+    --matcha-mist:  #F2F6F0;
+    --milk:         #C8A882;
+    --milk-mid:     #D9BFA0;
+    --milk-light:   #ECD9C6;
+    --milk-pale:    #FAF4EE;
+    --cream:        #FDFAF6;
+    --honey:        #E8A040;
+    --honey-pale:   #FDF0DC;
+    --earth:        #8B6650;
+    --text-dark:    #2E2318;
+    --text-mid:     #5C4330;
+    --text-soft:    #9A7B6A;
+    --text-muted:   #BDA898;
+    --border:       #E5D8CB;
+    --shadow:       0 4px 24px rgba(107,143,94,0.10);
+    --shadow-hover: 0 8px 36px rgba(107,143,94,0.18);
+    --radius:       20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 600px 400px at 90% 10%, rgba(107,143,94,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 500px 500px at 5%  80%, rgba(200,168,130,0.09) 0%, transparent 70%);
+  }
+  .page { display: none; position: relative; z-index: 1; min-height: 100vh; }
+  .page.active { display: flex; flex-direction: column; }
+
+  /* NAV */
+  nav {
+    background: rgba(253,250,246,0.93);
+    backdrop-filter: blur(14px);
+    border-bottom: 1.5px solid var(--border);
+    padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 66px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(107,143,94,0.07);
+  }
+  .nav-logo {
+    font-size: 1.4rem; font-weight: 900; color: var(--matcha);
+    display: flex; align-items: center; gap: 8px; cursor: pointer; letter-spacing: -0.3px;
+  }
+  .nav-logo .leaf { display:inline-block; animation: sway 3s ease-in-out infinite; font-size:1.6rem; }
+  @keyframes sway { 0%,100%{transform:rotate(-8deg)} 50%{transform:rotate(8deg)} }
+  .nav-links { display: flex; align-items: center; gap: 10px; }
+  .nav-btn {
+    padding: 8px 18px; border-radius: 50px; border: 1.5px solid transparent;
+    font-family: inherit; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+  }
+  .nav-btn.ghost { border-color: var(--matcha-light); color: var(--matcha); background: transparent; }
+  .nav-btn.ghost:hover { background: var(--matcha); color: #fff; border-color: var(--matcha); }
+  .nav-btn.solid { background: var(--matcha); color: #fff; border-color: var(--matcha); }
+  .nav-btn.solid:hover { background: #587A4C; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(107,143,94,0.3); }
+  .nav-btn.honey-btn { background: var(--honey); color: #fff; border-color: var(--honey); }
+  .nav-btn.honey-btn:hover { background: #D08E30; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(232,160,64,0.3); }
+  .nav-user { display:flex; align-items:center; gap:9px; cursor:pointer; padding:4px 8px; border-radius:50px; transition:background 0.2s; }
+  .nav-user:hover { background: var(--matcha-pale); }
+  .nav-avatar { width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid var(--matcha-light); }
+  .nav-username { font-weight:700; color:var(--text-mid); font-size:0.9rem; }
+
+  /* AUTH */
+  #page-auth {
+    background: linear-gradient(160deg, var(--matcha-mist) 0%, var(--milk-pale) 55%, var(--honey-pale) 100%);
+    align-items: center; justify-content: center; padding: 40px 20px;
+  }
+  .deco-leaf { position:absolute; font-size:2.8rem; opacity:0.11; animation:floatLeaf 6s ease-in-out infinite; pointer-events:none; }
+  .deco-leaf:nth-child(1){top:7%;left:5%;animation-delay:0s}
+  .deco-leaf:nth-child(2){top:72%;left:4%;animation-delay:1.6s;font-size:2rem}
+  .deco-leaf:nth-child(3){top:12%;right:4%;animation-delay:0.9s}
+  .deco-leaf:nth-child(4){top:78%;right:7%;animation-delay:2.1s;font-size:2.4rem}
+  @keyframes floatLeaf { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-18px) rotate(14deg)} }
+  .auth-card {
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(18px);
+    border-radius: 28px; padding: 44px 40px; width:100%; max-width:420px;
+    box-shadow: 0 16px 56px rgba(107,143,94,0.14), 0 2px 8px rgba(107,143,94,0.05);
+    border: 1.5px solid rgba(181,204,176,0.45);
+    animation: riseIn 0.5s cubic-bezier(.22,1,.36,1); position:relative; z-index:1;
+  }
+  @keyframes riseIn { from{opacity:0;transform:translateY(24px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+  .auth-header { text-align:center; margin-bottom:28px; }
+  .auth-header .logo-icon { font-size:3rem; display:block; margin-bottom:10px; }
+  .auth-header h1 { font-size:1.95rem; font-weight:900; color:var(--matcha); letter-spacing:-0.5px; }
+  .auth-header p { color:var(--text-soft); font-size:0.9rem; margin-top:5px; }
+  .auth-tabs {
+    display:flex; margin-bottom:24px;
+    background:var(--matcha-mist); border-radius:13px; padding:4px; gap:4px;
+  }
+  .auth-tab {
+    flex:1; padding:10px; border-radius:10px; border:none; background:transparent;
+    font-family:inherit; font-weight:800; font-size:0.91rem; color:var(--text-soft); cursor:pointer; transition:all 0.2s;
+  }
+  .auth-tab.active { background:white; color:var(--matcha); box-shadow:0 2px 8px rgba(107,143,94,0.13); }
+  .form-group { margin-bottom:15px; }
+  .form-label { display:block; font-weight:700; font-size:0.84rem; color:var(--text-mid); margin-bottom:5px; }
+  .form-input {
+    width:100%; padding:11px 15px; border-radius:11px;
+    border:1.5px solid var(--border); background:var(--cream);
+    font-family:inherit; font-size:0.93rem; color:var(--text-dark); outline:none; transition:all 0.2s;
+  }
+  .form-input:focus { border-color:var(--matcha); box-shadow:0 0 0 3px rgba(107,143,94,0.12); background:#fff; }
+  .avatar-upload { display:flex; align-items:center; gap:13px; }
+  .avatar-preview {
+    width:58px; height:58px; border-radius:50%;
+    background:var(--matcha-pale); display:flex; align-items:center; justify-content:center;
+    font-size:1.5rem; overflow:hidden; border:2px solid var(--matcha-light); flex-shrink:0;
+  }
+  .avatar-preview img { width:100%; height:100%; object-fit:cover; }
+  .upload-btn {
+    padding:8px 14px; border-radius:9px; border:1.5px dashed var(--matcha-light);
+    background:var(--matcha-pale); color:var(--matcha); font-weight:700; font-size:0.85rem;
+    cursor:pointer; font-family:inherit; transition:all 0.2s;
+  }
+  .upload-btn:hover { background:var(--matcha); color:white; border-style:solid; }
+  .auth-submit {
+    width:100%; padding:13px; border-radius:13px; border:none;
+    background:linear-gradient(135deg, var(--matcha) 0%, #87A878 100%);
+    color:white; font-family:inherit; font-weight:900; font-size:1rem;
+    cursor:pointer; transition:all 0.22s; margin-top:6px;
+    box-shadow:0 4px 16px rgba(107,143,94,0.28); letter-spacing:0.3px;
+  }
+  .auth-submit:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(107,143,94,0.38); filter:brightness(1.04); }
+  .auth-error {
+    color:#7A3A00; background:#FFF0D8; border:1.5px solid var(--honey);
+    border-radius:10px; padding:9px 13px; font-size:0.87rem; font-weight:600;
+    margin-bottom:13px; display:none;
+  }
+
+  /* MAIN */
+  .main-content { flex:1; max-width:680px; width:100%; margin:0 auto; padding:26px 20px; }
+  .welcome-banner {
+    background:linear-gradient(135deg, var(--matcha) 0%, #7FA870 50%, var(--matcha-mid) 100%);
+    border-radius:22px; padding:24px 28px; color:white; margin-bottom:20px;
+    box-shadow:0 8px 28px rgba(107,143,94,0.24); position:relative; overflow:hidden;
+  }
+  .welcome-banner::before {
+    content:'🍵 🌿 🍃 🌾';
+    position:absolute; right:16px; top:50%; transform:translateY(-50%);
+    font-size:1.7rem; letter-spacing:6px; opacity:0.2; pointer-events:none;
+  }
+  .welcome-banner h2 { font-size:1.3rem; font-weight:900; margin-bottom:3px; }
+  .welcome-banner p { font-size:0.88rem; opacity:0.86; }
+  .new-post-card {
+    background:white; border-radius:var(--radius); padding:17px 21px;
+    box-shadow:var(--shadow); margin-bottom:20px;
+    display:flex; align-items:center; gap:12px; cursor:pointer;
+    transition:all 0.2s; border:1.5px solid transparent;
+  }
+  .new-post-card:hover { border-color:var(--matcha-light); box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+  .npc-avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid var(--matcha-light); flex-shrink:0; }
+  .npc-ph {
+    flex:1; background:var(--matcha-mist); border-radius:50px; padding:10px 16px;
+    color:var(--text-soft); font-size:0.91rem; border:1.5px solid var(--matcha-pale);
+  }
+  .section-title {
+    font-size:0.97rem; font-weight:800; color:var(--text-mid);
+    margin-bottom:13px; display:flex; align-items:center; gap:7px;
+    padding-bottom:8px; border-bottom:1.5px solid var(--border);
+  }
+
+  /* POST CARD */
+  .post-card {
+    background:white; border-radius:var(--radius); padding:21px 23px;
+    box-shadow:var(--shadow); margin-bottom:16px;
+    transition:all 0.2s; border:1.5px solid transparent;
+    animation:fadeUp 0.36s ease both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(13px)} to{opacity:1;transform:translateY(0)} }
+  .post-card:hover { box-shadow:var(--shadow-hover); border-color:var(--matcha-pale); transform:translateY(-2px); }
+  .post-header { display:flex; align-items:center; gap:11px; margin-bottom:12px; }
+  .post-avatar { width:43px; height:43px; border-radius:50%; object-fit:cover; border:2px solid var(--matcha-light); flex-shrink:0; }
+  .post-meta { flex:1; }
+  .post-author { font-weight:800; font-size:0.94rem; color:var(--text-dark); }
+  .post-uid { font-size:0.79rem; color:var(--text-soft); }
+  .post-time { font-size:0.77rem; color:var(--text-muted); white-space:nowrap; }
+  .post-title { font-size:1.06rem; font-weight:900; color:var(--text-dark); margin-bottom:6px; line-height:1.4; }
+  .post-content { font-size:0.92rem; color:var(--text-mid); line-height:1.7; margin-bottom:11px; }
+  .post-img { width:100%; border-radius:13px; object-fit:cover; max-height:270px; margin-bottom:12px; display:block; border:1px solid var(--border); }
+  .post-actions { display:flex; gap:7px; padding-top:11px; border-top:1.5px solid var(--matcha-mist); }
+  .action-btn {
+    display:flex; align-items:center; gap:5px;
+    padding:7px 14px; border-radius:50px; border:1.5px solid var(--border);
+    background:var(--cream); color:var(--text-soft);
+    font-family:inherit; font-weight:700; font-size:0.85rem; cursor:pointer; transition:all 0.18s;
+  }
+  .action-btn:hover { border-color:var(--matcha-light); color:var(--matcha); background:var(--matcha-mist); }
+  .action-btn.liked { background:var(--honey-pale); border-color:var(--honey); color:var(--honey); }
+  .action-btn.liked:hover { background:var(--honey); color:white; }
+  .action-btn.comment-open { background:var(--matcha-pale); border-color:var(--matcha-light); color:var(--matcha); }
+  .action-btn.delete-btn { border-color:var(--border); color:#B36B6B; background:var(--cream); }
+  .action-btn.delete-btn:hover { border-color:#B36B6B; color:white; background:#B36B6B; }
+
+  /* COMMENTS */
+  .comments-section { margin-top:13px; padding-top:11px; border-top:1.5px dashed var(--matcha-pale); display:none; }
+  .comment-item { display:flex; gap:9px; margin-bottom:10px; align-items:flex-start; }
+  .comment-avatar { width:29px; height:29px; border-radius:50%; object-fit:cover; border:1.5px solid var(--matcha-light); flex-shrink:0; }
+  .comment-body {
+    background:var(--matcha-mist); border-radius:11px 11px 11px 3px;
+    padding:7px 11px; flex:1; border:1px solid var(--matcha-pale);
+  }
+  .comment-author { font-weight:800; font-size:0.79rem; color:var(--matcha); }
+  .comment-text { font-size:0.87rem; color:var(--text-mid); margin-top:2px; line-height:1.5; }
+  .comment-input-row { display:flex; gap:8px; align-items:center; margin-top:9px; }
+  .comment-input {
+    flex:1; padding:8px 13px; border-radius:50px;
+    border:1.5px solid var(--matcha-light); background:var(--matcha-mist);
+    font-family:inherit; font-size:0.87rem; outline:none; color:var(--text-dark); transition:all 0.2s;
+  }
+  .comment-input:focus { border-color:var(--matcha); background:white; box-shadow:0 0 0 3px rgba(107,143,94,0.1); }
+  .comment-send {
+    width:33px; height:33px; border-radius:50%; border:none;
+    background:var(--matcha); color:white; font-size:0.95rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:all 0.18s; flex-shrink:0;
+  }
+  .comment-send:hover { background:#587A4C; transform:scale(1.09); }
+
+  /* POST FORM */
+  .post-form-wrap { flex:1; max-width:640px; width:100%; margin:0 auto; padding:26px 20px; }
+  .post-form-card {
+    background:white; border-radius:26px; padding:34px 34px;
+    box-shadow:0 12px 40px rgba(107,143,94,0.12); border:1.5px solid var(--border);
+  }
+  .post-form-header { display:flex; align-items:center; gap:12px; margin-bottom:24px; padding-bottom:18px; border-bottom:1.5px solid var(--matcha-pale); }
+  .pf-avatar-img { width:50px; height:50px; border-radius:50%; object-fit:cover; border:2.5px solid var(--matcha); }
+  .pf-name { font-weight:900; font-size:0.98rem; color:var(--text-dark); }
+  .pf-uid  { font-size:0.81rem; color:var(--text-soft); }
+  .post-form-card h2 { font-size:1.38rem; font-weight:900; color:var(--matcha); margin-bottom:20px; }
+  .fi {
+    width:100%; padding:12px 15px; border-radius:12px;
+    border:1.5px solid var(--border); background:var(--cream);
+    font-family:inherit; font-size:0.94rem; color:var(--text-dark);
+    outline:none; transition:all 0.2s; margin-bottom:13px;
+  }
+  .fi:focus { border-color:var(--matcha); box-shadow:0 0 0 3px rgba(107,143,94,0.1); background:white; }
+  textarea.fi { resize:vertical; min-height:118px; line-height:1.65; }
+  .img-drop {
+    border:2px dashed var(--matcha-light); border-radius:15px; padding:26px;
+    text-align:center; cursor:pointer; margin-bottom:16px; transition:all 0.2s; background:var(--matcha-mist);
+  }
+  .img-drop:hover { border-color:var(--matcha); background:var(--matcha-pale); }
+  .img-drop .di { font-size:1.9rem; display:block; margin-bottom:6px; }
+  .img-drop p { color:var(--text-soft); font-size:0.88rem; font-weight:600; }
+  .img-prev-wrap { position:relative; margin-bottom:13px; }
+  .img-prev-wrap img { width:100%; border-radius:13px; max-height:250px; object-fit:cover; border:1.5px solid var(--border); }
+  .img-rm {
+    position:absolute; top:8px; right:8px;
+    background:rgba(46,35,24,0.6); color:white; border:none; border-radius:50%;
+    width:26px; height:26px; cursor:pointer; font-size:0.9rem;
+    display:flex; align-items:center; justify-content:center; transition:background 0.2s;
+  }
+  .img-rm:hover { background:rgba(46,35,24,0.85); }
+  .post-submit {
+    width:100%; padding:14px; border-radius:13px; border:none;
+    background:linear-gradient(135deg, var(--matcha) 0%, #87A878 100%);
+    color:white; font-family:inherit; font-weight:900; font-size:1rem;
+    cursor:pointer; transition:all 0.22s; box-shadow:0 4px 16px rgba(107,143,94,0.28);
+  }
+  .post-submit:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(107,143,94,0.38); filter:brightness(1.04); }
+  .back-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    color:var(--matcha); font-weight:700; background:none; border:none;
+    font-family:inherit; font-size:0.91rem; cursor:pointer; margin-bottom:16px; padding:0; transition:gap 0.18s;
+  }
+  .back-btn:hover { gap:10px; }
+
+  /* SHARE HERO */
+  .share-hero {
+    background:linear-gradient(135deg, #8B6E50 0%, var(--milk) 40%, #D4AC80 100%);
+    padding:32px 24px; text-align:center; color:white; position:relative; overflow:hidden;
+  }
+  .share-hero::after {
+    content:'🍵  🌿  🍃  🌾  🫖';
+    position:absolute; bottom:-4px; left:50%; transform:translateX(-50%);
+    font-size:1.5rem; letter-spacing:10px; opacity:0.18; white-space:nowrap; pointer-events:none;
+  }
+  .share-hero h1 { font-size:1.85rem; font-weight:900; margin-bottom:5px; letter-spacing:-0.4px; }
+  .share-hero p { opacity:0.87; font-size:0.91rem; }
+
+  /* PROFILE HERO */
+  .profile-hero {
+    background:linear-gradient(135deg, #4E6B44 0%, var(--matcha) 45%, #8FA878 100%);
+    padding:34px 24px 28px; display:flex; flex-direction:column; align-items:center; gap:9px; color:white;
+    position:relative; overflow:hidden;
+  }
+  .profile-hero::before {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 3 Q22 10 20 20 Q18 10 20 3Z' fill='rgba(255,255,255,0.05)'/%3E%3C/svg%3E") repeat;
+  }
+  .profile-big-avatar {
+    width:86px; height:86px; border-radius:50%; object-fit:cover;
+    border:3.5px solid rgba(255,255,255,0.8); box-shadow:0 4px 18px rgba(0,0,0,0.18); position:relative; z-index:1;
+  }
+  .profile-hero h2 { font-size:1.4rem; font-weight:900; letter-spacing:-0.3px; position:relative; z-index:1; }
+  .profile-uid { opacity:0.8; font-size:0.88rem; position:relative; z-index:1; }
+  .profile-stats { display:flex; gap:30px; margin-top:4px; position:relative; z-index:1; }
+  .profile-stat { text-align:center; }
+  .profile-stat .num { font-size:1.4rem; font-weight:900; }
+  .profile-stat .lbl { font-size:0.77rem; opacity:0.8; }
+
+  /* MODAL */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(46,35,24,0.45); backdrop-filter:blur(4px);
+    z-index:1000; display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity 0.22s;
+  }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal-box {
+    background:white; border-radius:24px; padding:36px 30px; max-width:330px; width:90%;
+    text-align:center; box-shadow:0 24px 60px rgba(107,143,94,0.2); border:1.5px solid var(--border);
+    transform:scale(0.92) translateY(10px); transition:transform 0.24s;
+  }
+  .modal-overlay.open .modal-box { transform:scale(1) translateY(0); }
+  .m-icon { font-size:2.7rem; display:block; margin-bottom:11px; }
+  .modal-box h3 { font-size:1.15rem; font-weight:900; color:var(--text-dark); margin-bottom:7px; }
+  .modal-box p { color:var(--text-soft); font-size:0.88rem; line-height:1.6; margin-bottom:20px; }
+  .modal-btns { display:flex; gap:8px; }
+  .modal-btn {
+    flex:1; padding:11px; border-radius:10px; border:none;
+    font-family:inherit; font-weight:700; font-size:0.9rem; cursor:pointer; transition:all 0.18s;
+  }
+  .modal-btn.primary { background:var(--matcha); color:white; }
+  .modal-btn.primary:hover { background:#587A4C; }
+  .modal-btn.secondary { background:var(--matcha-mist); color:var(--text-mid); border:1.5px solid var(--border); }
+  .modal-btn.secondary:hover { background:var(--matcha-pale); }
+
+  /* TOAST */
+  .toast {
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(65px);
+    background:var(--text-dark); color:white; border-radius:50px;
+    padding:11px 21px; font-weight:700; font-size:0.91rem; z-index:9999;
+    transition:transform 0.3s cubic-bezier(.34,1.56,.64,1); white-space:nowrap;
+    box-shadow:0 8px 24px rgba(0,0,0,0.18);
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  /* CAPTCHA GRID */
+  .captcha-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+  .captcha-cell {
+    aspect-ratio:1; background:var(--matcha-mist); border-radius:12px;
+    border:2px solid var(--matcha-light); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all 0.2s; user-select:none; position:relative; overflow:hidden; padding:0;
+  }
+  .captcha-cell img { width:100%; height:100%; object-fit:cover; pointer-events:none; }
+  .captcha-cell:hover { border-color:var(--matcha); }
+  .captcha-cell.selected::after {
+    content:'✓'; position:absolute; top:4px; right:4px;
+    background:var(--matcha); color:white; width:22px; height:22px;
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:0.9rem; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.2);
+  }
+  .captcha-cell.selected {
+    border-color:var(--matcha);
+    box-shadow:inset 0 0 0 3px rgba(107,143,94,0.3); transform:scale(0.94);
+  }
+
+  /* EMPTY */
+  .empty-state { text-align:center; padding:50px 20px; color:var(--text-muted); }
+  .empty-state .ei { font-size:3rem; display:block; margin-bottom:10px; }
+  .empty-state p { font-size:0.93rem; font-weight:600; }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    display:none; position:fixed; bottom:0; left:0; right:0;
+    background:rgba(253,250,246,0.95); backdrop-filter:blur(10px);
+    border-top:1.5px solid var(--border); z-index:99;
+    padding:5px 0 env(safe-area-inset-bottom,5px);
+  }
+  .bnav-inner { display:flex; justify-content:space-around; }
+  .bnav-btn {
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    background:none; border:none; font-family:inherit; font-size:0.69rem;
+    color:var(--text-muted); cursor:pointer; padding:6px 14px; font-weight:700; transition:color 0.18s;
+  }
+  .bnav-btn .bi { font-size:1.3rem; }
+  .bnav-btn.active { color:var(--matcha); }
+
+  @media(max-width:600px) {
+    .bottom-nav { display:block; }
+    .main-content { padding-bottom:84px; }
+    .auth-card { padding:28px 20px; }
+    .post-form-card { padding:22px 16px; }
+    nav { padding:0 14px; }
+  }
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-thumb { background:var(--matcha-light); border-radius:99px; }
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="page-auth" class="page active">
+  <div class="deco-leaf" style="top:7%;left:5%">🌿</div>
+  <div class="deco-leaf" style="top:72%;left:4%">🍃</div>
+  <div class="deco-leaf" style="top:12%;right:4%">🌾</div>
+  <div class="deco-leaf" style="top:78%;right:7%">🍵</div>
+  <div class="auth-card">
+    <div class="auth-header">
+      <span class="logo-icon">🍵</span>
+      <h1>好食光</h1>
+      <p>每一口美食，都值得被珍藏 🌿</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">登入</button>
+      <button class="auth-tab" onclick="switchTab('register')">註冊帳號</button>
+    </div>
+    <div id="auth-error" class="auth-error"></div>
+    <div id="form-login">
+      <div class="form-group">
+        <label class="form-label">帳號 ID</label>
+        <input class="form-input" id="login-id" type="text" placeholder="輸入您的帳號 ID">
+      </div>
+      <div class="form-group">
+        <label class="form-label">密碼</label>
+        <input class="form-input" id="login-pw" type="password" placeholder="輸入密碼">
+      </div>
+      <button class="auth-submit" onclick="doLogin()">🌿 進入好食光</button>
+    </div>
+    <div id="form-register" style="display:none">
+      <div class="form-group">
+        <label class="form-label">帳號 ID <span style="color:var(--text-muted);font-size:0.8rem">（唯一識別）</span></label>
+        <input class="form-input" id="reg-id" type="text" placeholder="例：matcha_lover">
+      </div>
+      <div class="form-group">
+        <label class="form-label">暱稱</label>
+        <input class="form-input" id="reg-name" type="text" placeholder="大家看到的名字">
+      </div>
+      <div class="form-group">
+        <label class="form-label">密碼</label>
+        <input class="form-input" id="reg-pw" type="password" placeholder="至少 4 個字元">
+      </div>
+      <div class="form-group">
+        <label class="form-label">頭貼 <span style="color:var(--text-muted);font-size:0.8rem">（可選）</span></label>
+        <div class="avatar-upload">
+          <div class="avatar-preview" id="reg-avatar-preview">🧑‍🍳</div>
+          <div>
+            <button class="upload-btn" onclick="document.getElementById('reg-avatar-file').click()">📷 上傳頭貼</button>
+            <input type="file" id="reg-avatar-file" accept="image/*" style="display:none" onchange="previewAvatar(this)">
+            <p style="color:var(--text-muted);font-size:0.77rem;margin-top:4px">JPG、PNG、GIF</p>
+          </div>
+        </div>
+      </div>
+      <button class="auth-submit" onclick="doRegister()">🌾 加入好食光</button>
+    </div>
+    <div id="form-2fa" style="display:none">
+      <div class="form-group">
+        <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+          九宮格圖形驗證
+          <button class="nav-btn ghost" style="padding:4px 8px; font-size:0.8rem;" onclick="generateCaptcha()" title="重新產生">🔄 換一題</button>
+        </label>
+        <p style="font-size:0.85rem;color:var(--text-soft);margin-bottom:12px;" id="captcha-instruction">請選出所有的...</p>
+        <div class="captcha-grid" id="captcha-grid"></div>
+      </div>
+      <button class="auth-submit" onclick="verify2FA()">🔐 驗證並登入</button>
+      <button class="nav-btn ghost" style="width:100%;margin-top:10px" onclick="cancel2FA()">返回</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="page-home" class="page">
+  <nav>
+    <div class="nav-logo" onclick="goPage('home')"><span class="leaf">🍃</span> 好食光</div>
+    <div class="nav-links">
+      <button class="nav-btn ghost" onclick="goPage('share')">🌍 分享區</button>
+      <button class="nav-btn honey-btn" onclick="goPage('new-post')">✏️ 新增貼文</button>
+      <div class="nav-user" onclick="goPage('profile')">
+        <img class="nav-avatar" id="home-nav-avatar" src="" alt="">
+        <span class="nav-username" id="home-nav-name"></span>
+      </div>
+      <button class="nav-btn ghost" onclick="doLogout()">登出</button>
+    </div>
+  </nav>
+  <div class="main-content">
+    <div class="welcome-banner">
+      <h2>嗨，<span id="home-welcome-name"></span>！</h2>
+      <p>今天品嚐了什麼好滋味？快來記錄分享 🌿</p>
+    </div>
+    <div class="new-post-card" onclick="goPage('new-post')">
+      <img class="npc-avatar" id="home-post-avatar" src="" alt="">
+      <div class="npc-ph">今天吃了什麼美食？點我分享 🍵</div>
+    </div>
+    <div class="section-title">🗂️ 我的貼文紀錄</div>
+    <div id="my-posts-list"></div>
+  </div>
+  <div class="bottom-nav"><div class="bnav-inner">
+    <button class="bnav-btn active" onclick="goPage('home')"><span class="bi">🏠</span>首頁</button>
+    <button class="bnav-btn" onclick="goPage('share')"><span class="bi">🌍</span>分享</button>
+    <button class="bnav-btn" onclick="goPage('new-post')"><span class="bi">✏️</span>發文</button>
+    <button class="bnav-btn" onclick="goPage('profile')"><span class="bi">👤</span>我的</button>
+  </div></div>
+</div>
+
+<!-- NEW POST -->
+<div id="page-new-post" class="page">
+  <nav><div class="nav-logo"><span class="leaf">🍃</span> 好食光</div></nav>
+  <div class="post-form-wrap">
+    <button class="back-btn" onclick="goPage('home')">← 返回首頁</button>
+    <div class="post-form-card">
+      <div class="post-form-header">
+        <img class="pf-avatar-img" id="pf-avatar" src="" alt="">
+        <div><div class="pf-name" id="pf-name"></div><div class="pf-uid" id="pf-uid"></div></div>
+      </div>
+      <h2>🌿 分享美食貼文</h2>
+      <input class="fi" id="post-title" type="text" placeholder="📌 貼文主題，例如：京都抹茶甜點推薦！">
+      <textarea class="fi" id="post-content" placeholder="✍️ 分享你的美食故事、心得、評分……"></textarea>
+      <div id="post-img-prev-wrap" class="img-prev-wrap" style="display:none">
+        <img id="post-img-prev" src="" alt="">
+        <button class="img-rm" onclick="removePostImg()">✕</button>
+      </div>
+      <div class="img-drop" id="post-img-drop" onclick="document.getElementById('post-img-file').click()">
+        <span class="di">📷</span>
+        <p>點擊上傳食物照片（可選）</p>
+      </div>
+      <input type="file" id="post-img-file" accept="image/*" style="display:none" onchange="previewPostImg(this)">
+      <button class="post-submit" onclick="submitPost()">🌾 發布貼文</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE -->
+<div id="page-share" class="page">
+  <nav>
+    <div class="nav-logo" onclick="goPage('home')"><span class="leaf">🍃</span> 好食光</div>
+    <div class="nav-links">
+      <button class="nav-btn ghost" id="s-login" onclick="goPage('auth')" style="display:none">登入</button>
+      <button class="nav-btn honey-btn" id="s-newpost" onclick="goPage('new-post')" style="display:none">✏️ 發文</button>
+      <div class="nav-user" id="s-user" style="display:none" onclick="goPage('profile')">
+        <img class="nav-avatar" id="s-avatar" src="" alt="">
+        <span class="nav-username" id="s-name"></span>
+      </div>
+      <button class="nav-btn ghost" id="s-logout" onclick="doLogout()" style="display:none">登出</button>
+    </div>
+  </nav>
+  <div class="share-hero">
+    <h1>🌍 美食分享區</h1>
+    <p>探索所有美食愛好者的精彩分享 🍵🌿🍃</p>
+  </div>
+  <div class="main-content"><div id="share-posts-list"></div></div>
+  <div class="bottom-nav"><div class="bnav-inner">
+    <button class="bnav-btn" onclick="goPage('home')"><span class="bi">🏠</span>首頁</button>
+    <button class="bnav-btn active" onclick="goPage('share')"><span class="bi">🌍</span>分享</button>
+    <button class="bnav-btn" onclick="goPage('new-post')"><span class="bi">✏️</span>發文</button>
+    <button class="bnav-btn" onclick="goPage('profile')"><span class="bi">👤</span>我的</button>
+  </div></div>
+</div>
+
+<!-- PROFILE -->
+<div id="page-profile" class="page">
+  <nav>
+    <div class="nav-logo" onclick="goPage('home')"><span class="leaf">🍃</span> 好食光</div>
+    <div class="nav-links">
+      <button class="nav-btn ghost" onclick="goPage('home')">← 返回</button>
+      <button class="nav-btn ghost" id="prof-logout-btn" onclick="doLogout()">登出</button>
+    </div>
+  </nav>
+  <div class="profile-hero">
+    <img class="profile-big-avatar" id="prof-avatar" src="" alt="">
+    <h2 id="prof-name"></h2>
+    <div class="profile-uid" id="prof-uid"></div>
+    <div class="profile-stats">
+      <div class="profile-stat"><div class="num" id="prof-posts">0</div><div class="lbl">貼文</div></div>
+      <div class="profile-stat"><div class="num" id="prof-likes">0</div><div class="lbl">獲讚</div></div>
+      <div class="profile-stat"><div class="num" id="prof-comms">0</div><div class="lbl">留言</div></div>
+    </div>
+  </div>
+  <div class="main-content">
+    <div class="section-title" id="prof-section-title">📝 我的所有貼文</div>
+    <div id="profile-posts-list"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="login-modal" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <span class="m-icon">🍵</span>
+    <h3>需要登入才能互動！</h3>
+    <p>您尚未登入好食光。<br>是否有帳號呢？登入後可留言與按讚！</p>
+    <div class="modal-btns">
+      <button class="modal-btn primary" onclick="goPage('auth');closeModal()">登入 / 註冊</button>
+      <button class="modal-btn secondary" onclick="closeModal()">先逛逛</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DB = {
+  getUsers:    ()=> JSON.parse(localStorage.getItem('hsg3_users')||'[]'),
+  saveUsers:   u => localStorage.setItem('hsg3_users', JSON.stringify(u)),
+  getPosts:    ()=> JSON.parse(localStorage.getItem('hsg3_posts')||'[]'),
+  savePosts:   p => localStorage.setItem('hsg3_posts', JSON.stringify(p)),
+  getSession:  ()=> JSON.parse(localStorage.getItem('hsg3_sess')||'null'),
+  saveSession: s => localStorage.setItem('hsg3_sess', JSON.stringify(s)),
+  clearSession:()=> localStorage.removeItem('hsg3_sess'),
+};
+
+let currentUser = null;
+let currentProfileUserId = null;
+let regAvatarData = null;
+let postImgData = null;
+let pendingLoginUser = null;
+
+let currentCaptchaTarget = '';
+let currentCaptchaExpected = [];
+let currentCaptchaSelected = [];
+
+const CAPTCHA_DATA = [
+  {
+    name: '貓咪',
+    images: [
+      'https://loremflickr.com/300/300/cat?lock=100',
+      'https://loremflickr.com/300/300/cat?lock=101',
+      'https://loremflickr.com/300/300/cat?lock=102',
+      'https://loremflickr.com/300/300/cat?lock=103'
+    ]
+  },
+  {
+    name: '狗狗',
+    images: [
+      'https://loremflickr.com/300/300/dog?lock=200',
+      'https://loremflickr.com/300/300/dog?lock=201',
+      'https://loremflickr.com/300/300/dog?lock=202',
+      'https://loremflickr.com/300/300/dog?lock=203'
+    ]
+  },
+  {
+    name: '鳥類',
+    images: [
+      'https://loremflickr.com/300/300/bird?lock=300',
+      'https://loremflickr.com/300/300/bird?lock=301',
+      'https://loremflickr.com/300/300/bird?lock=302',
+      'https://loremflickr.com/300/300/bird?lock=303'
+    ]
+  }
+];
+
+function generateCaptcha() {
+  currentCaptchaSelected = [];
+  const targetCategory = CAPTCHA_DATA[Math.floor(Math.random() * CAPTCHA_DATA.length)];
+  currentCaptchaTarget = targetCategory.name;
+  document.getElementById('captcha-instruction').innerHTML = `為確保安全，請點擊下圖中所有的 <strong>「${targetCategory.name}」</strong>`;
+  
+  const targetCount = Math.floor(Math.random() * 3) + 2;
+  const grid = new Array(9).fill(null);
+  currentCaptchaExpected = [];
+  
+  let targetImages = [...targetCategory.images].sort(()=>Math.random()-0.5);
+  
+  let placed = 0;
+  while(placed < targetCount) {
+    const idx = Math.floor(Math.random() * 9);
+    if(grid[idx] === null) {
+      grid[idx] = targetImages[placed % targetImages.length];
+      currentCaptchaExpected.push(idx);
+      placed++;
+    }
+  }
+  
+  const otherCategories = CAPTCHA_DATA.filter(x => x.name !== targetCategory.name);
+  let otherImages = [];
+  otherCategories.forEach(cat => otherImages.push(...cat.images));
+  otherImages.sort(()=>Math.random()-0.5);
+  
+  let otherPlaced = 0;
+  for(let i=0; i<9; i++) {
+    if(grid[i] === null) {
+      grid[i] = otherImages[otherPlaced % otherImages.length];
+      otherPlaced++;
+    }
+  }
+  
+  const gridEl = document.getElementById('captcha-grid');
+  if(!gridEl) return;
+  gridEl.innerHTML = grid.map((imgUrl, i) => 
+    `<div class="captcha-cell" id="cc-${i}" onclick="toggleCaptchaCell(${i})">
+       <img src="${imgUrl}" alt="captcha">
+     </div>`
+  ).join('');
+}
+
+function toggleCaptchaCell(idx) {
+  const cell = document.getElementById(`cc-${idx}`);
+  if(!cell) return;
+  const selIdx = currentCaptchaSelected.indexOf(idx);
+  if(selIdx === -1) {
+    currentCaptchaSelected.push(idx);
+    cell.classList.add('selected');
+  } else {
+    currentCaptchaSelected.splice(selIdx, 1);
+    cell.classList.remove('selected');
+  }
+}
+
+window.onload = () => {
+  seedDemo();
+  const sess = DB.getSession();
+  if (sess) {
+    const u = DB.getUsers().find(x => x.id === sess.id);
+    if (u) { currentUser = u; goPage('home'); return; }
+  }
+  goPage('auth');
+};
+
+function goUserProfile(id) {
+  if (!id) return;
+  currentProfileUserId = id;
+  goPage('profile');
+}
+
+function goPage(name) {
+  if (['home','new-post','profile'].includes(name) && !currentUser) { goPage('auth'); return; }
+  if (name !== 'profile') currentProfileUserId = null;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const m = { auth:'page-auth', home:'page-home', 'new-post':'page-new-post', share:'page-share', profile:'page-profile' };
+  const pg = document.getElementById(m[name]); if (!pg) return;
+  pg.classList.add('active');
+  if (name==='home')     renderHome();
+  if (name==='new-post') renderNewPost();
+  if (name==='share')    renderShare();
+  if (name==='profile')  renderProfile();
+  window.scrollTo(0,0);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i)=> t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('form-login').style.display    = tab==='login'    ? '' : 'none';
+  document.getElementById('form-register').style.display = tab==='register' ? '' : 'none';
+  document.querySelector('.auth-tabs').style.display = 'flex';
+  const f2fa = document.getElementById('form-2fa');
+  if (f2fa) f2fa.style.display = 'none';
+  clearErr();
+}
+function showErr(m){ const e=document.getElementById('auth-error'); e.textContent=m; e.style.display='block'; }
+function clearErr(){ document.getElementById('auth-error').style.display='none'; }
+
+function previewAvatar(input) {
+  const f=input.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{ regAvatarData=e.target.result; document.getElementById('reg-avatar-preview').innerHTML=`<img src="${regAvatarData}" alt="">`; };
+  r.readAsDataURL(f);
+}
+
+function doRegister() {
+  const id=document.getElementById('reg-id').value.trim();
+  const name=document.getElementById('reg-name').value.trim();
+  const pw=document.getElementById('reg-pw').value;
+  if(!id||!name||!pw){ showErr('請填寫所有必填欄位！'); return; }
+  if(pw.length<4){ showErr('密碼至少需要 4 個字元！'); return; }
+  const users=DB.getUsers();
+  if(users.find(u=>u.id===id)){ showErr('此 ID 已被使用，請換一個！'); return; }
+  users.push({ id, name, password:pw, avatar: regAvatarData||makeAvatar(name), joinDate:new Date().toISOString() });
+  DB.saveUsers(users); regAvatarData=null;
+  showToast('🌿 註冊成功！請登入'); switchTab('login');
+  document.getElementById('login-id').value=id;
+}
+
+function doLogin() {
+  const id=document.getElementById('login-id').value.trim();
+  const pw=document.getElementById('login-pw').value;
+  if(!id||!pw){ showErr('請輸入 ID 和密碼！'); return; }
+  const u=DB.getUsers().find(x=>x.id===id&&x.password===pw);
+  if(!u){ showErr('帳號或密碼錯誤！'); return; }
+  
+  pendingLoginUser = u;
+  
+  document.getElementById('form-login').style.display = 'none';
+  document.querySelector('.auth-tabs').style.display = 'none';
+  document.getElementById('form-2fa').style.display = '';
+  clearErr();
+  
+  setTimeout(() => { generateCaptcha(); }, 50);
+}
+
+function verify2FA() {
+  const isMatch = currentCaptchaExpected.length > 0 &&
+                  currentCaptchaExpected.length === currentCaptchaSelected.length &&
+                  currentCaptchaExpected.every(i => currentCaptchaSelected.includes(i));
+                  
+  if (!isMatch) { 
+    showErr('選擇錯誤或未選取完全，請再試一次！'); 
+    generateCaptcha();
+    return; 
+  }
+  
+  currentUser = pendingLoginUser;
+  DB.saveSession({id: currentUser.id});
+  
+  pendingLoginUser = null;
+  currentCaptchaTarget = '';
+  
+  document.getElementById('form-2fa').style.display = 'none';
+  document.querySelector('.auth-tabs').style.display = 'flex';
+  
+  goPage('home'); showToast(`🍵 歡迎回來，${currentUser.name}！`);
+}
+
+function cancel2FA() {
+  pendingLoginUser = null;
+  currentCaptchaTarget = '';
+  document.getElementById('form-2fa').style.display = 'none';
+  document.querySelector('.auth-tabs').style.display = 'flex';
+  switchTab('login');
+}
+
+function doLogout() {
+  currentUser=null; DB.clearSession();
+  goPage('auth'); showToast('🌿 已登出，下次見！');
+}
+
+function makeAvatar(name) {
+  const pal=['#6B8F5E','#87A878','#C8A882','#E8A040','#8B6650','#5A7A4E'];
+  const c=pal[Math.abs(hash(name))%pal.length];
+  const cv=document.createElement('canvas'); cv.width=cv.height=100;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=c; ctx.fillRect(0,0,100,100);
+  ctx.fillStyle='#fff'; ctx.font='bold 46px sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(name[0].toUpperCase(),50,50);
+  return cv.toDataURL();
+}
+function hash(s){ let h=0; for(let c of s) h=((h<<5)-h)+c.charCodeAt(0); return h; }
+
+function renderNewPost() {
+  if(!currentUser) return;
+  document.getElementById('pf-avatar').src = currentUser.avatar;
+  document.getElementById('pf-name').textContent = currentUser.name;
+  document.getElementById('pf-uid').textContent = '@'+currentUser.id;
+  document.getElementById('post-title').value='';
+  document.getElementById('post-content').value='';
+  removePostImg();
+}
+function previewPostImg(input) {
+  const f=input.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    postImgData=e.target.result;
+    document.getElementById('post-img-prev').src=postImgData;
+    document.getElementById('post-img-prev-wrap').style.display='block';
+    document.getElementById('post-img-drop').style.display='none';
+  };
+  r.readAsDataURL(f);
+}
+function removePostImg() {
+  postImgData=null;
+  document.getElementById('post-img-prev-wrap').style.display='none';
+  document.getElementById('post-img-drop').style.display='block';
+  document.getElementById('post-img-file').value='';
+}
+function submitPost() {
+  if(!currentUser) return;
+  const title=document.getElementById('post-title').value.trim();
+  const content=document.getElementById('post-content').value.trim();
+  if(!title||!content){ showToast('⚠️ 請填寫主題和內容！'); return; }
+  const posts=DB.getPosts();
+  posts.unshift({ id:Date.now().toString(), authorId:currentUser.id, authorName:currentUser.name, authorAvatar:currentUser.avatar, title, content, img:postImgData||null, likes:[], comments:[], time:new Date().toISOString() });
+  DB.savePosts(posts); postImgData=null;
+  showToast('🌾 貼文發布成功！'); goPage('home');
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>'); }
+function timeAgo(iso){ const d=(Date.now()-new Date(iso))/1000; if(d<60) return '剛剛'; if(d<3600) return Math.floor(d/60)+' 分鐘前'; if(d<86400) return Math.floor(d/3600)+' 小時前'; return Math.floor(d/86400)+' 天前'; }
+
+function postCard(post) {
+  const liked=currentUser&&post.likes.includes(currentUser.id);
+  const isAuthor=currentUser&&post.authorId===currentUser.id;
+  const deleteBtn=isAuthor?`<button class="action-btn delete-btn" onclick="deletePost('${post.id}')">🗑️ 刪除</button>`:'';
+  const comments=post.comments.map(c=>`
+    <div class="comment-item">
+      <img class="comment-avatar" src="${c.avatar}" alt="" style="cursor:pointer" onclick="goUserProfile('${c.authorId}')">
+      <div class="comment-body">
+        <div class="comment-author" style="cursor:pointer" onclick="goUserProfile('${c.authorId}')">@${c.authorId} · ${esc(c.authorName)}</div>
+        <div class="comment-text">${esc(c.text)}</div>
+      </div>
+    </div>`).join('');
+  const inputRow=currentUser
+    ? `<div class="comment-input-row">
+        <img class="comment-avatar" src="${currentUser.avatar}" alt="">
+        <input class="comment-input" id="ci-${post.id}" placeholder="留下你的想法..." onkeydown="if(event.key==='Enter')sendComment('${post.id}')">
+        <button class="comment-send" onclick="sendComment('${post.id}')">➤</button>
+       </div>`
+    : `<p style="color:var(--text-muted);font-size:0.84rem;margin-top:7px;text-align:center">🔒 登入後才能留言</p>`;
+  return `
+  <div class="post-card" id="post-${post.id}">
+    <div class="post-header">
+      <img class="post-avatar" src="${post.authorAvatar}" alt="" style="cursor:pointer" onclick="goUserProfile('${post.authorId}')">
+      <div class="post-meta">
+        <div class="post-author" style="cursor:pointer" onclick="goUserProfile('${post.authorId}')">${esc(post.authorName)}</div>
+        <div class="post-uid" style="cursor:pointer" onclick="goUserProfile('${post.authorId}')">@${post.authorId}</div>
+      </div>
+      <div class="post-time">${timeAgo(post.time)}</div>
+    </div>
+    <div class="post-title">${esc(post.title)}</div>
+    <div class="post-content">${esc(post.content)}</div>
+    ${post.img?`<img class="post-img" src="${post.img}" alt="食物照片">`:''}
+    <div class="post-actions">
+      <button class="action-btn ${liked?'liked':''}" onclick="toggleLike('${post.id}')">
+        ${liked?'❤️':'🤍'} ${post.likes.length>0?post.likes.length:''} 讚
+      </button>
+      <button class="action-btn comment-btn" onclick="toggleComments('${post.id}')">
+        💬 ${post.comments.length>0?post.comments.length:''} 留言
+      </button>
+      ${deleteBtn}
+    </div>
+    <div class="comments-section" id="cs-${post.id}">${comments}${inputRow}</div>
+  </div>`;
+}
+
+function renderHome() {
+  if(!currentUser) return;
+  document.getElementById('home-nav-avatar').src=currentUser.avatar;
+  document.getElementById('home-nav-name').textContent=currentUser.name;
+  document.getElementById('home-post-avatar').src=currentUser.avatar;
+  document.getElementById('home-welcome-name').textContent=currentUser.name;
+  const posts=DB.getPosts().filter(p=>p.authorId===currentUser.id);
+  document.getElementById('my-posts-list').innerHTML=posts.length
+    ? posts.map(postCard).join('')
+    : `<div class="empty-state"><span class="ei">🍵</span><p>還沒有貼文，點上方開始分享吧！</p></div>`;
+}
+
+function renderShare() {
+  const li=!!currentUser;
+  document.getElementById('s-login').style.display   = li?'none':'';
+  document.getElementById('s-newpost').style.display = li?'':'none';
+  document.getElementById('s-user').style.display    = li?'':'none';
+  document.getElementById('s-logout').style.display  = li?'':'none';
+  if(li){ document.getElementById('s-avatar').src=currentUser.avatar; document.getElementById('s-name').textContent=currentUser.name; }
+  const posts=DB.getPosts();
+  document.getElementById('share-posts-list').innerHTML=posts.length
+    ? posts.map(postCard).join('')
+    : `<div class="empty-state"><span class="ei">🌿</span><p>還沒有貼文，快去成為第一個！</p></div>`;
+}
+
+function renderProfile() {
+  const targetId = currentProfileUserId || (currentUser ? currentUser.id : null);
+  if(!targetId) return;
+  const targetUser = DB.getUsers().find(u => u.id === targetId);
+  if(!targetUser) return;
+  const isMe = currentUser && currentUser.id === targetId;
+
+  document.getElementById('prof-avatar').src=targetUser.avatar;
+  document.getElementById('prof-name').textContent=targetUser.name;
+  document.getElementById('prof-uid').textContent='@'+targetUser.id;
+  
+  const posts=DB.getPosts().filter(p=>p.authorId===targetId);
+  document.getElementById('prof-posts').textContent=posts.length;
+  document.getElementById('prof-likes').textContent=posts.reduce((s,p)=>s+p.likes.length,0);
+  document.getElementById('prof-comms').textContent=posts.reduce((s,p)=>s+p.comments.length,0);
+  
+  document.getElementById('prof-section-title').textContent = isMe ? '📝 我的所有貼文' : `📝 ${targetUser.name} 的所有貼文`;
+  document.getElementById('prof-logout-btn').style.display = isMe ? '' : 'none';
+
+  document.getElementById('profile-posts-list').innerHTML=posts.length
+    ? posts.map(postCard).join('')
+    : `<div class="empty-state"><span class="ei">📝</span><p>還沒有貼文</p></div>`;
+}
+
+function toggleLike(id) {
+  if(!currentUser){ openModal(); return; }
+  const posts=DB.getPosts();
+  const p=posts.find(x=>x.id===id); if(!p) return;
+  const i=p.likes.indexOf(currentUser.id);
+  if(i===-1){ p.likes.push(currentUser.id); showToast('❤️ 已按讚！'); }
+  else{ p.likes.splice(i,1); showToast('🤍 已取消讚'); }
+  DB.savePosts(posts); refresh(id);
+}
+
+function toggleComments(id) {
+  if(!currentUser){ openModal(); return; }
+  const cs=document.getElementById('cs-'+id); if(!cs) return;
+  const open=cs.style.display==='block';
+  cs.style.display=open?'none':'block';
+  const btn=document.querySelector(`#post-${id} .comment-btn`);
+  if(btn) btn.classList.toggle('comment-open',!open);
+  if(!open){ const inp=document.getElementById('ci-'+id); if(inp) inp.focus(); }
+}
+
+function sendComment(id) {
+  if(!currentUser){ openModal(); return; }
+  const inp=document.getElementById('ci-'+id); if(!inp) return;
+  const text=inp.value.trim(); if(!text) return;
+  const posts=DB.getPosts();
+  const p=posts.find(x=>x.id===id); if(!p) return;
+  p.comments.push({ authorId:currentUser.id, authorName:currentUser.name, avatar:currentUser.avatar, text, time:new Date().toISOString() });
+  DB.savePosts(posts); inp.value='';
+  showToast('💬 留言成功！'); refresh(id);
+}
+
+function deletePost(id) {
+  if(!confirm('確定要刪除這篇貼文嗎？')) return;
+  const posts=DB.getPosts();
+  const i=posts.findIndex(x=>x.id===id);
+  if(i===-1) return;
+  posts.splice(i,1);
+  DB.savePosts(posts);
+  showToast('🗑️ 貼文已刪除');
+  refresh();
+}
+
+function refresh(openId) {
+  const a=document.querySelector('.page.active'); if(!a) return;
+  const n=a.id;
+  if(n==='page-home') renderHome();
+  else if(n==='page-share') renderShare();
+  else if(n==='page-profile') renderProfile();
+  if(openId) setTimeout(()=>{ const cs=document.getElementById('cs-'+openId); if(cs) cs.style.display='block'; },10);
+}
+
+function openModal()  { document.getElementById('login-modal').classList.add('open'); }
+function closeModal() { document.getElementById('login-modal').classList.remove('open'); }
+
+let toastT;
+function showToast(msg) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function seedDemo() {
+  if(DB.getUsers().length>0) return;
+  const u1={ id:'matcha_yuki', name:'抹茶雪', password:'1234', avatar:makeAvatar('雪'), joinDate:new Date().toISOString() };
+  const u2={ id:'foodie_ken',  name:'美食阿健', password:'1234', avatar:makeAvatar('健'), joinDate:new Date().toISOString() };
+  DB.saveUsers([u1,u2]);
+  DB.savePosts([
+    { id:'p001', authorId:'matcha_yuki', authorName:'抹茶雪', authorAvatar:u1.avatar,
+      title:'京都一保堂抹茶體驗 🍵',
+      content:'昨天在京都一保堂親手點了一碗薄茶，茶筅刷出的細緻泡沫搭配和菓子，真的是絕妙組合！抹茶的清香苦味在嘴裡慢慢化開，配上甜甜的練切，整個靈魂都被洗滌了。強烈推薦給所有抹茶控！',
+      img:null, likes:['foodie_ken'],
+      comments:[{ authorId:'foodie_ken', authorName:'美食阿健', avatar:u2.avatar, text:'好羨慕！下次去京都一定要試試 🌿', time:new Date(Date.now()-1800000).toISOString() }],
+      time:new Date(Date.now()-7200000).toISOString() },
+    { id:'p002', authorId:'foodie_ken', authorName:'美食阿健', authorAvatar:u2.avatar,
+      title:'台中巷弄裡的古早味奶茶 🧋',
+      content:'在台中偶然發現一家隱藏在巷弄裡的古早味奶茶店！用台灣本土紅茶加上進口奶粉，甜度跟一般手搖完全不同，那個濃郁奶香真的讓人難忘。一杯只要35元，CP值無敵高！',
+      img:null, likes:['matcha_yuki'],
+      comments:[], time:new Date(Date.now()-3600000).toISOString() }
+  ]);
+}
+</script>
+</body>
+</html>
